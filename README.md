@@ -1,51 +1,67 @@
 # niko-archive
 
-主站与轻小说书库的组合仓库。两个产品分别保存在独立 Git 仓库中：
+主站组合与部署仓库，通过 Git submodule 固定各产品版本：
 
 ```text
-niko-archive/          主仓库：组合、部署配置
-  niko-main/           子仓库：网站收藏首页，提供 /
-  niko-wenku/          子仓库：轻小说书库，提供 /nikowenku-archive/
+niko-archive/
+  niko-main/                 网站收藏首页 → /
+  niko-wenku/                轻小说书库 → /nikowenku-archive/
+    tools/nico-cli/          书库打包依赖，固定 CLI 源码版本
+  nico-cli/                  独立命令管理仓库
+    packages/nikowenku-archive/  可单独安装的书库 CLI 包
+  deploy/nginx.conf          80 端口入口配置
 ```
 
-首页是 `niko-main/index.html`，书库卡片排在第一位。书库仍由原来的 Node 服务提供 API 和书籍文件，外部入口由 Nginx 路径转发。
+GitHub 上的四个仓库位于 https://github.com/LastEmbryo2950618641 下。`niko-wenku` 由原 `wenku-archive` 重命名，保留完整提交历史；两个位置引用的 `nico-cli` 是同一个 GitHub 仓库的固定版本。首页第一张卡片是轻小说文库。
 
-## 本地准备
-
-初始化子仓库远端后，将 `.gitmodules` 中的相对地址解析到同一 GitHub 组织下的 `niko-main` 和 `niko-wenku` 仓库：
+## 克隆与更新
 
 ```sh
+git clone --recurse-submodules https://github.com/LastEmbryo2950618641/niko-archive.git
+cd niko-archive
 git submodule update --init --recursive
 ```
 
-当前目录已为本机建好两个独立 Git 仓库。新机器在远端创建并推送这两个子仓库后，再把顶层仓库中的 gitlink 推上去即可克隆。
+更新组合版本：`git pull --ff-only` 后执行 `git submodule sync --recursive` 和 `git submodule update --init --recursive`。顶层仓库不自动追踪子仓库最新分支；子仓库开发并推送后，需要在顶层提交新的 gitlink。
 
 ## 构建与运行
 
-Node.js 22 或更新版本：
+需要 Node.js 22+：
 
 ```sh
 npm run setup:wenku
+npm run test:cli
+npm run test:wenku
 npm run build
 npm --prefix niko-wenku start
 ```
 
-组合仓库的 `npm run build` 会以 `/nikowenku-archive/` 为 Vite base 构建书库。书库 Node 服务继续只监听 `127.0.0.1:4178`；生产入口使用 Nginx 的 80 端口配置 `deploy/nginx.conf`。将配置中的 `/srv/niko-archive` 改成实际部署目录，并让 Nginx 服务用户可读 `niko-main/`。
+首页为独立静态 HTML，不需要构建；组合构建以 `/nikowenku-archive/` 为 Vite base 生成书库。Node 服务继续只监听 `127.0.0.1:4178`。Nginx 使用 `deploy/nginx.conf` 提供 80 端口入口，将 `/srv/niko-archive` 改为实际部署目录，并确保服务用户可读 `niko-main/`。替换服务器配置前先执行 `nginx -t`。
 
-本地浏览首页可直接打开 `niko-main/index.html`。验证完整的 `/nikowenku-archive/` 子路径需使用相同的 Nginx 路径代理；单独运行书库时仍可通过其本地根路径访问。
+代理保留 `/api/` 供已经安装的 npm CLI 使用，并保留原 `/worldseed/` 路由。新的书库页面及其 API、封面、下载通过 `/nikowenku-archive/` 访问。首页的手动新增卡片和主题偏好仅保存在当前浏览器。
 
-## GitHub 仓库
+## 命令管理与独立书库命令
 
-创建同一账号/组织下的三个仓库，建议都使用 `main` 分支：
+```sh
+npm run pack:cli
+```
 
-- `niko-archive`：当前顶层仓库
-- `niko-main`：`niko-main/` 子仓库
-- `niko-wenku`：`niko-wenku/` 子仓库，沿用书库原有提交历史
+`nico-cli/dist/` 中生成两个无第三方运行依赖的 npm 包，支持 Windows、Linux、macOS：
 
-顶层仓库与首页仓库建立本地初始提交，书库保留原提交历史；顶层通过 Git submodule 固定两个子仓库的提交。尚未创建或推送新远端。书库原 GitHub 地址仅记录为 `legacy` remote，避免误推回旧仓库。远端创建后，为各仓库设置新的 `origin`；先推送两个子仓库，再推送顶层仓库。
+```sh
+npm install -g --offline ./nico-cli-0.1.0.tgz
+nico-cli list
+nico-cli nikowenku-archive search "星"
 
-## 原有运行数据
+# 或单独使用书库工具
+npm install -g --offline ./nikowenku-archive-0.1.1.tgz
+nikowenku-archive search "星"
+```
 
-`niko-wenku` 来自原书库的已提交源码，本次不复制 `library/`、`.state/`、`secrets/`、任务队列或其他未提交文件。原 `wenku-archive` 目录和运行服务继续保留。部署时用原有 `ARCHIVE_LIBRARY`、`ARCHIVE_STATE_DIR`、`ARCHIVE_QUEUE`、`ARCHIVE_AUTH_FILE` 指向既有数据目录，避免将数据放进源码仓库；不要同时启动两个服务操作同一任务队列。
+网站构建从 `niko-wenku/tools/nico-cli` 打包同一份源码，将两个安装包放进书库的公开下载目录。主站源码、命令源码和运行数据分别管理。现有 npm 发布版本本次不变，新管理器尚未发布 npm。
 
-模板保留 `/api/` 入口以兼容现有 npm CLI，并保留原 `/worldseed/` 代理。80 端口配置已准备，本次尚未应用到远端。
+## 运行数据与部署
+
+原本地 `wenku-archive` 目录继续保留；本次没有复制 `library/`、`.state/`、`secrets/`、任务队列或未提交文件。部署时通过 `ARCHIVE_LIBRARY`、`ARCHIVE_STATE_DIR`、`ARCHIVE_QUEUE`、`ARCHIVE_AUTH_FILE` 指向既有运行数据目录，不要让两个服务同时操作同一任务队列。公开服务还需设置 `ARCHIVE_PUBLIC_ORIGIN` 为完整 origin，具体账号和数据配置见 `niko-wenku/docs/deployment.md`。
+
+仓库结构调整和推送不等于服务器部署；本次的 Nginx 80 端口配置尚未应用到远端服务器。

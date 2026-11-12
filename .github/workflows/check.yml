@@ -1,0 +1,25 @@
+name: Integrated site checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm --prefix niko-wenku ci
+      - run: npm run test:cli
+      - run: npm run test:wenku
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: |
+            niko-main/index.html
+            niko-wenku/dist/
+            deploy/
