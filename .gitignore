@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+*.log
+niko-wenku/dist/
+niko-wenku/node_modules/
+niko-wenku/.state/
+niko-wenku/secrets/
+niko-wenku/library/
+niko-wenku/download-queue.json

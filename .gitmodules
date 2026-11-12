@@ -1,0 +1,7 @@
+[submodule "niko-main"]
+	path = niko-main
+	url = ../niko-main.git
+
+[submodule "niko-wenku"]
+	path = niko-wenku
+	url = ../niko-wenku.git

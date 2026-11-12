@@ -1,0 +1,11 @@
+{
+  "name": "niko-archive-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:wenku": "node scripts/build.mjs",
+    "setup:wenku": "npm --prefix niko-wenku ci && npm --prefix niko-wenku run setup",
+    "test:wenku": "npm --prefix niko-wenku test"
+  }
+}
