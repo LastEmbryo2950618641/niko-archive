@@ -19,6 +19,8 @@ GitHub 上的五个仓库位于 https://github.com/LastEmbryo2950618641 下。`n
 
 监控中心通过 `npm --prefix niko-monitor ci` 安装构建依赖，运行 `npm run build:monitor` 和 `npm run start:monitor` 后访问 `http://127.0.0.1:4182/niko-monitor/`。它独立探测和采集，不启动文库扫描或下载。使用固定的 Niko 管理员账号密码登录，部署配置见 `niko-monitor/README.md`；服务器安装入口为 `niko-monitor/deploy/install.sh`。现有站点部署脚本不自动安装监控服务，需要先部署监控，再发布带采集入口的网站。
 
+监控界面分为概览、访问 IP、接口三个视图。生产安装会配置独立的 Nginx 清洗日志，逐接口统计浏览器和 CLI 请求量、IP、延迟及 HTTP 错误，保留原有浏览/点击历史。仅安全 GET 接口主动探测，写接口依据真实响应观察；访问 IP 明细需管理员登录，原始数据保留 30 天。
+
 ## 管理员账号
 
 文库管理员与监控使用同一固定账号 `liuqi`，监控服务端保存密码摘要。需要主动统一现有文库管理员配置时执行 `sudo node scripts/sync-admin.mjs --auth-file /home/liuqi/.local/share/wenku-archive/secrets/admin-auth.json`，然后重启文库主后端加载配置。工具会原子更新管理员摘要并保留一份权限为 0600 的旧配置备份，不修改注册读者账号；重复执行不重写文件。此操作只在明确调整管理员账号时执行，不属于日常网页发布步骤。
