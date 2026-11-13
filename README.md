@@ -38,7 +38,7 @@ npm --prefix niko-wenku start
 
 首页为独立静态 HTML，不需要构建；组合构建以 `/nikowenku-archive/` 为 Vite base 生成书库。Node 服务继续只监听 `127.0.0.1:4178`。Nginx 使用 `deploy/nginx.conf` 提供 80 端口入口，将 `/srv/niko-archive` 改为实际部署目录，并确保服务用户可读 `niko-main/`。替换服务器配置前先执行 `nginx -t`。
 
-首页对话另用 Node.js 22+ 的 `niko-home-chat.service`，只监听 `127.0.0.1:4181`。部署 `niko-main/` 的静态资源和 `server/` 后，执行 `sudo bash niko-main/deploy/install-chat.sh https://你的域名`，安装脚本只新增 `/chat-api/` 代理并保留现有书库、星海余页路由。API 配置在独立状态目录加密保存，详情见 `niko-main/README.md`。`npm run test:main` 使用模拟上游测试协议、流式响应和密钥隔离，不消耗模型额度。生产使用真实 Key 应先提供 HTTPS。
+首页对话另用 Node.js 22+ 的 `niko-home-chat.service`，只监听 `127.0.0.1:4181`。部署 `niko-main/` 的静态资源和 `server/` 后，执行 `sudo bash niko-main/deploy/install-chat.sh https://你的域名`，安装脚本只新增 `/chat-api/` 代理并保留现有书库、星海余页路由。API Key 与配置仅保存在用户浏览器 localStorage，服务端仅按请求临时转发，不持久保存或记录 Key，详情见 `niko-main/README.md`。`npm run test:main` 使用模拟上游测试协议、流式响应和本地配置，不消耗模型额度。生产使用真实 Key 应先提供 HTTPS。
 
 代理保留 `/api/` 供已经安装的 npm CLI 使用，并保留原 `/worldseed/` 路由。新的书库页面及其 API、封面、下载通过 `/nikowenku-archive/` 访问。首页的手动新增卡片和主题偏好仅保存在当前浏览器。
 
