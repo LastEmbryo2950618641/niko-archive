@@ -17,7 +17,7 @@ GitHub 上的五个仓库位于 https://github.com/LastEmbryo2950618641 下。`n
 
 ## 监控中心
 
-监控中心通过 `npm --prefix niko-monitor ci` 安装构建依赖，运行 `npm run build:monitor` 和 `npm run start:monitor` 后访问 `http://127.0.0.1:4182/niko-monitor/`。它独立探测和采集，不启动文库扫描或下载。生产部署及访问密钥配置见 `niko-monitor/README.md`；现有站点部署脚本不自动安装监控服务，需要先部署监控，再发布带采集入口的网站。
+监控中心通过 `npm --prefix niko-monitor ci` 安装构建依赖，运行 `npm run build:monitor` 和 `npm run start:monitor` 后访问 `http://127.0.0.1:4182/niko-monitor/`。它独立探测和采集，不启动文库扫描或下载。生产部署及访问密钥配置见 `niko-monitor/README.md`；服务器安装入口为 `niko-monitor/deploy/install.sh`。现有站点部署脚本不自动安装监控服务，需要先部署监控，再发布带采集入口的网站。
 
 ## 克隆与更新
 
