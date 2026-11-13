@@ -12,6 +12,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: npm run test:main
       - run: npm --prefix niko-wenku ci
       - run: npm run test:cli
       - run: npm run test:wenku
@@ -21,5 +22,9 @@ jobs:
           name: site-build
           path: |
             niko-main/index.html
+            niko-main/chat.css
+            niko-main/chat.js
+            niko-main/server/
+            niko-main/deploy/
             niko-wenku/dist/
             deploy/
