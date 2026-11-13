@@ -6,6 +6,6 @@
 	path = niko-wenku
 	url = ../niko-wenku.git
 
-[submodule "nico-cli"]
-	path = nico-cli
-	url = ../nico-cli.git
+[submodule "niko-cli"]
+	path = niko-cli
+	url = ../niko-cli.git

@@ -6,13 +6,13 @@
 niko-archive/
   niko-main/                 网站收藏首页 → /
   niko-wenku/                轻小说书库 → /nikowenku-archive/
-    tools/nico-cli/          书库打包依赖，固定 CLI 源码版本
-  nico-cli/                  独立命令管理仓库
+    tools/niko-cli/          书库打包依赖，固定 CLI 源码版本
+  niko-cli/                  独立命令管理仓库
     packages/nikowenku-archive/  可单独安装的书库 CLI 包
   deploy/nginx.conf          80 端口入口配置
 ```
 
-GitHub 上的四个仓库位于 https://github.com/LastEmbryo2950618641 下。`niko-wenku` 由原 `wenku-archive` 重命名，保留完整提交历史；两个位置引用的 `nico-cli` 是同一个 GitHub 仓库的固定版本。首页第一张卡片是轻小说文库。
+GitHub 上的四个仓库位于 https://github.com/LastEmbryo2950618641 下。`niko-wenku` 由原 `wenku-archive` 重命名，保留完整提交历史；两个位置引用的 `niko-cli` 是同一个 GitHub 仓库的固定版本。首页第一张卡片是轻小说文库。
 
 ## 克隆与更新
 
@@ -72,19 +72,19 @@ SSH 用户需要免交互 SSH 认证和 `sudo -n` 权限。部署操作用服务
 npm run pack:cli
 ```
 
-`nico-cli/dist/` 中生成两个无第三方运行依赖的 npm 包，支持 Windows、Linux、macOS：
+`niko-cli/dist/` 中生成两个无第三方运行依赖的 npm 包，支持 Windows、Linux、macOS：
 
 ```sh
-npm install -g --offline ./nico-cli-0.1.0.tgz
-nico-cli list
-nico-cli nikowenku-archive search "星"
+npm install -g --offline ./niko-cli-0.1.0.tgz
+niko-cli list
+niko-cli nikowenku-archive search "星"
 
 # 或单独使用书库工具
 npm install -g --offline ./nikowenku-archive-0.1.1.tgz
 nikowenku-archive search "星"
 ```
 
-网站构建从 `niko-wenku/tools/nico-cli` 打包同一份源码，将两个安装包放进书库的公开下载目录。主站源码、命令源码和运行数据分别管理。现有 npm 发布版本本次不变，新管理器尚未发布 npm。
+网站构建从 `niko-wenku/tools/niko-cli` 打包同一份源码，将两个安装包放进书库的公开下载目录。主站源码、命令源码和运行数据分别管理。现有 npm 发布版本本次不变，新管理器尚未发布 npm。
 
 ## 运行数据与部署
 

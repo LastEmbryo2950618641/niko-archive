@@ -8,10 +8,10 @@
     "build:wenku": "node scripts/build.mjs",
     "setup:wenku": "npm --prefix niko-wenku ci && npm --prefix niko-wenku run setup",
     "test:wenku": "npm --prefix niko-wenku test",
-    "test:cli": "npm --prefix nico-cli test",
+    "test:cli": "npm --prefix niko-cli test",
     "test:deploy": "node --test test/*.test.mjs",
     "package:site": "node scripts/release.mjs package",
     "deploy": "node scripts/release.mjs deploy",
-    "pack:cli": "npm --prefix nico-cli run pack:all"
+    "pack:cli": "npm --prefix niko-cli run pack:all"
   }
 }
