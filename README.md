@@ -36,6 +36,30 @@ npm run build
 npm --prefix niko-wenku start
 ```
 
+统一打包和发布（Windows、Linux、macOS 均可运行，需要 Node.js 22+、Git、tar、SSH/SCP；目标服务器为 Linux）：
+
+```sh
+npm run test:deploy
+npm run package:site
+npm run deploy -- --archive ./output/site-release.tar.gz
+
+# 或一条命令完成构建、打包、上传与发布
+npm run deploy
+```
+
+发布包包含首页静态文件、构建后的文库和 Git 中的只读备用源码、systemd 模板、修复脚本、Nginx 主备配置，不包含书库、队列、凭据或运行状态。单独打包不连接服务器；上传部署时，在服务器本机检查备用的健康响应（须带 `readOnly: true`）和书目读取。**备用可用就完全跳过，不升级、不重启、不修改配置；只有不可用才重新部署并启用，恢复检查通过后再发布网页，修复失败则终止发布。** 不重启主文库后端、下载器或首页聊天服务；已有静态资源保留供打开中的页面使用。
+
+默认目标为 `ubuntu@111.229.32.85`、站点目录 `/srv/niko-archive`，其他配置可通过参数指定：
+
+```sh
+npm run deploy -- --host ubuntu@111.229.32.85 \
+  --target /srv/niko-archive --service-user liuqi \
+  --library /home/liuqi/.local/share/wenku-archive/library \
+  --origin http://111.229.32.85 --nginx-site /etc/nginx/sites-enabled/worldseed
+```
+
+SSH 用户需要免交互 SSH 认证和 `sudo -n` 权限。部署操作用服务端文件锁串行执行，发布包解压到临时目录，完成后清理。健康的备用即使代码版本较旧也按要求保留；需要主动升级备用时，另外执行 `niko-wenku/deploy/install-read-api.sh`。
+
 首页为独立静态 HTML，不需要构建；组合构建以 `/nikowenku-archive/` 为 Vite base 生成书库。Node 服务继续只监听 `127.0.0.1:4178`。Nginx 使用 `deploy/nginx.conf` 提供 80 端口入口，将 `/srv/niko-archive` 改为实际部署目录，并确保服务用户可读 `niko-main/`。替换服务器配置前先执行 `nginx -t`。
 
 首页对话另用 Node.js 22+ 的 `niko-home-chat.service`，只监听 `127.0.0.1:4181`。部署 `niko-main/` 的静态资源和 `server/` 后，执行 `sudo bash niko-main/deploy/install-chat.sh https://你的域名`，安装脚本只新增 `/chat-api/` 代理并保留现有书库、星海余页路由。API Key 与配置通过浏览器 Web Crypto 加密后保存在本地，AES 密钥以不可导出 CryptoKey 保存在当前浏览器的 IndexedDB；服务端仅按请求临时转发，不持久保存或记录用户 Key，详情见 `niko-main/README.md`。`npm run test:main` 使用模拟上游测试协议、流式响应和本地配置，不消耗模型额度。公网 IP 部署可运行 `sudo bash niko-main/deploy/enable-https.sh 公网IPv4` 申请 IP 证书、启用首页 HTTPS 与自动续期；HTTP 和 HTTPS 配置相互隔离，切换后需重新填写一次。
