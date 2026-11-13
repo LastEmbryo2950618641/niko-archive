@@ -67,3 +67,5 @@ nikowenku-archive search "星"
 原本地 `wenku-archive` 目录继续保留；本次没有复制 `library/`、`.state/`、`secrets/`、任务队列或未提交文件。部署时通过 `ARCHIVE_LIBRARY`、`ARCHIVE_STATE_DIR`、`ARCHIVE_QUEUE`、`ARCHIVE_AUTH_FILE` 指向既有运行数据目录，不要让两个服务同时操作同一任务队列。公开服务还需设置 `ARCHIVE_PUBLIC_ORIGIN` 为完整 origin，具体账号和数据配置见 `niko-wenku/docs/deployment.md`。
 
 Nginx 直接提供首页和带子路径前缀构建的书库静态前端，`/nikowenku-archive/api/` 去掉前缀后转发到既有 Node 服务，原 `/api/` 保留兼容。这样发布网页无需重启正在扫描或下载的后台服务。`/assets/` 临时保留旧前端资源入口供已有标签页继续使用。生产部署位置为 `/srv/niko-archive`；书库后端与运行数据仍由原服务管理。
+
+公开搜索、资料和下载可使用主备 API：主服务仍为本机 `4178`，独立的 `niko-wenku-read-api.service` 只读备用监听 `4179`，由 Nginx 在读取请求失败时切换，主恢复后重新优先使用主服务。备用无任务队列、扫描器、下载器或管理接口；书库挂为只读，仅维护自己的检索缓存，代码与网页、主后端分别发布。现有 CLI 地址和 npm 包无需更改。部署脚本、隔离故障测试、更新与回滚方式见 `niko-wenku/docs/deployment.md` 的“CLI 公开 API 主备冗余”；这属于同机进程冗余，不替代异机数据备份。
