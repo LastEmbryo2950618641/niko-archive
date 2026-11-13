@@ -25,6 +25,14 @@ jobs:
             niko-main/chat.css
             niko-main/chat.js
             niko-main/chat-conversations.js
+            niko-main/add-site.css
+            niko-main/add-site.js
+            niko-main/error-dialog.js
+            niko-main/recycle-bin.css
+            niko-main/recycle-bin.js
+            niko-main/site-details.js
+            niko-main/site-icon-catalog.js
+            niko-main/site-library.js
             niko-main/site-icons.js
             niko-main/site-icons.svg
             niko-main/ornaments.css
