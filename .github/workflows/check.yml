@@ -26,6 +26,7 @@ jobs:
             niko-main/chat.js
             niko-main/chat-settings.js
             niko-main/browser-settings.js
+            niko-main/select-menu.js
             niko-main/ui-motion.js
             niko-main/motion.css
             niko-main/server/
