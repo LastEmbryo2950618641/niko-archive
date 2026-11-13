@@ -24,6 +24,10 @@ jobs:
             niko-main/index.html
             niko-main/chat.css
             niko-main/chat.js
+            niko-main/chat-settings.js
+            niko-main/browser-settings.js
+            niko-main/ui-motion.js
+            niko-main/motion.css
             niko-main/server/
             niko-main/deploy/
             niko-wenku/dist/
