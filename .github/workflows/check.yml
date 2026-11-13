@@ -25,6 +25,10 @@ jobs:
             niko-main/chat.css
             niko-main/chat.js
             niko-main/chat-conversations.js
+            niko-main/site-icons.js
+            niko-main/site-icons.svg
+            niko-main/ornaments.css
+            niko-main/licenses/
             niko-main/chat-settings.js
             niko-main/browser-settings.js
             niko-main/select-menu.js
