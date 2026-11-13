@@ -9,10 +9,15 @@ niko-archive/
     tools/niko-cli/          书库打包依赖，固定 CLI 源码版本
   niko-cli/                  独立命令管理仓库
     packages/nikowenku-archive/  可单独安装的书库 CLI 包
+  niko-monitor/              独立健康与点击统计中心 → /niko-monitor/
   deploy/nginx.conf          80 端口入口配置
 ```
 
-GitHub 上的四个仓库位于 https://github.com/LastEmbryo2950618641 下。`niko-wenku` 由原 `wenku-archive` 重命名，保留完整提交历史；两个位置引用的 `niko-cli` 是同一个 GitHub 仓库的固定版本。首页第一张卡片是轻小说文库。
+GitHub 上的五个仓库位于 https://github.com/LastEmbryo2950618641 下。`niko-wenku` 由原 `wenku-archive` 重命名，保留完整提交历史；两个位置引用的 `niko-cli` 是同一个 GitHub 仓库的固定版本。首页第一张卡片是轻小说文库。
+
+## 监控中心
+
+监控中心通过 `npm --prefix niko-monitor ci` 安装构建依赖，运行 `npm run build:monitor` 和 `npm run start:monitor` 后访问 `http://127.0.0.1:4182/niko-monitor/`。它独立探测和采集，不启动文库扫描或下载。生产部署及访问密钥配置见 `niko-monitor/README.md`；现有站点部署脚本不自动安装监控服务，需要先部署监控，再发布带采集入口的网站。
 
 ## 克隆与更新
 

@@ -10,6 +10,10 @@
     "test:wenku": "npm --prefix niko-wenku test",
     "test:cli": "npm --prefix niko-cli test",
     "test:deploy": "node --test test/*.test.mjs",
+    "test:monitor": "npm --prefix niko-monitor test",
+    "build:monitor": "npm --prefix niko-monitor run build",
+    "dev:monitor": "npm --prefix niko-monitor run dev",
+    "start:monitor": "npm --prefix niko-monitor start",
     "package:site": "node scripts/release.mjs package",
     "deploy": "node scripts/release.mjs deploy",
     "pack:cli": "npm --prefix niko-cli run pack:all"

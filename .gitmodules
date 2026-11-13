@@ -9,3 +9,6 @@
 [submodule "niko-cli"]
 	path = niko-cli
 	url = ../niko-cli.git
+[submodule "niko-monitor"]
+	path = niko-monitor
+	url = ../niko-monitor.git
