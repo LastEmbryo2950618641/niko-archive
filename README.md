@@ -58,7 +58,7 @@ npm run deploy -- --archive ./output/site-release.tar.gz
 npm run deploy
 ```
 
-发布包包含首页静态文件、构建后的文库和 Git 中的只读备用源码、systemd 模板、修复脚本、Nginx 主备配置，不包含书库、队列、凭据或运行状态。单独打包不连接服务器；上传部署时，在服务器本机检查备用的健康响应（须带 `readOnly: true`）和书目读取。**备用可用就完全跳过，不升级、不重启、不修改配置；只有不可用才重新部署并启用，恢复检查通过后再发布网页，修复失败则终止发布。** 不重启主文库后端、下载器或首页聊天服务；已有静态资源保留供打开中的页面使用。
+发布包包含首页静态文件、构建后的文库和 Git 中的只读备用源码、systemd 模板、修复脚本、Nginx 主备配置，不包含书库、队列、凭据或运行状态。单独打包不连接服务器；上传部署时，在服务器本机检查备用的健康响应（须带 `readOnly: true`）和书目读取。**备用可用就完全跳过，不升级、不重启、不修改配置；只有不可用才重新部署并启用，恢复检查通过后再发布网页，修复失败则终止发布。** 一次更新不能只做一半：`npm run deploy` 只覆盖 `/srv/niko-archive` 的静态页面，主进程仍是 `/home/liuqi/apps/wenku-archive` 的 `wenku-archive.service`。把该目录快进到同一次提交，测试通过后执行 `systemctl --user restart wenku-archive`。重启会先安全停止下载器，断点保留，需再从任务页启动。只发布了静态文件时不得结束。首页聊天服务不随这次重启。已有静态资源保留供打开中的页面使用。
 
 默认目标为 `ubuntu@111.229.32.85`、站点目录 `/srv/niko-archive`，其他配置可通过参数指定：
 
@@ -101,6 +101,6 @@ nikowenku-archive search "星"
 
 原本地 `wenku-archive` 目录继续保留；本次没有复制 `library/`、`.state/`、`secrets/`、任务队列或未提交文件。部署时通过 `ARCHIVE_LIBRARY`、`ARCHIVE_STATE_DIR`、`ARCHIVE_QUEUE`、`ARCHIVE_AUTH_FILE` 指向既有运行数据目录，不要让两个服务同时操作同一任务队列。公开服务还需设置 `ARCHIVE_PUBLIC_ORIGIN` 为完整 origin，具体账号和数据配置见 `niko-wenku/docs/deployment.md`。
 
-Nginx 直接提供首页和带子路径前缀构建的书库静态前端，`/nikowenku-archive/api/` 去掉前缀后转发到既有 Node 服务，原 `/api/` 保留兼容。这样发布网页无需重启正在扫描或下载的后台服务。`/assets/` 临时保留旧前端资源入口供已有标签页继续使用。生产部署位置为 `/srv/niko-archive`；书库后端与运行数据仍由原服务管理。
+Nginx 直接提供首页和带子路径前缀构建的书库静态前端，`/nikowenku-archive/api/` 去掉前缀后转发到主后端，原 `/api/` 保留兼容。静态页面和主后端要一起更新；只换网页会让新页面打到旧进程。`/assets/` 临时保留旧前端资源入口供已有标签页继续使用。生产网页目录为 `/srv/niko-archive`；主后端代码在 `/home/liuqi/apps/wenku-archive`，运行数据仍由原服务管理。
 
 公开搜索、资料和下载可使用主备 API：主服务仍为本机 `4178`，独立的 `niko-wenku-read-api.service` 只读备用监听 `4179`，由 Nginx 在读取请求失败时切换，主恢复后重新优先使用主服务。备用无任务队列、扫描器、下载器或管理接口；书库挂为只读，仅维护自己的检索缓存，代码与网页、主后端分别发布。现有 CLI 地址和 npm 包无需更改。部署脚本、隔离故障测试、更新与回滚方式见 `niko-wenku/docs/deployment.md` 的“CLI 公开 API 主备冗余”；这属于同机进程冗余，不替代异机数据备份。
